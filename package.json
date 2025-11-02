@@ -6,9 +6,15 @@
     "cypress-mailslurp": "^1.11.1",
     "esbuild": "^0.25.12",
     "mailslurp-client": "^16.0.0",
+    "mochawesome": "^7.1.4",
+    "mochawesome-merge": "^5.0.0",
+    "mochawesome-report-generator": "^6.3.0",
     "typescript": "^5.9.3"
   },
   "dependencies": {
     "cypress": "14.4.0"
+  },
+  "scripts": {
+    "report": "cypress run --reporter mochawesome --reporter-options reportDir=mochawesome-report,overwrite=false,html=false,json=true && mochawesome-merge mochawesome-report/*.json -o mochawesome-report/mochawesome.json && marge mochawesome-report/mochawesome.json -f mochawesome -o mochawesome-report"
   }
 }

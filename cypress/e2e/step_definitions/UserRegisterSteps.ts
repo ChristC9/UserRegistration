@@ -99,3 +99,46 @@ Then(
 Then("the user should be redirected to login page", () => {
   registerPage.getLoginPage();
 });
+
+Then(
+  "the user fills the form with {string} and {string} and {string} and {string} and {string} and {string} and {string} and {string}:",
+  (
+    inquiryType: string,
+    companyName: string,
+    industry: string,
+    contactPerson: string,
+    jobTitle: string,
+    countryCode: string,
+    phoneNumber: string,
+    email: string
+  ) => {
+    registerPage.userFillCorporateRegistrationFields(
+      inquiryType,
+      companyName,
+      industry,
+      contactPerson,
+      jobTitle,
+      countryCode,
+      phoneNumber,
+      email
+    );
+  }
+);
+
+Then("the user should see a success message {string}", (message: string) => {
+  registerPage.verifySuccessMessageCorporate(message);
+});
+
+Then(
+  "the user clicks {string} in the success message dialog",
+  (buttonText: string) => {
+    registerPage.clickOKBtn(buttonText);
+  }
+);
+
+Then(
+  "the user should be redirected to membership registeration success page",
+  () => {
+    registerPage.getMembershipRegistrationPage();
+  }
+);

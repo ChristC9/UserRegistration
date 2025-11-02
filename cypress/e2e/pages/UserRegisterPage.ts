@@ -1,4 +1,8 @@
-import { REGISTER_URL, LOGIN_URL } from "../../constants/CommonConstants";
+import {
+  REGISTER_URL,
+  LOGIN_URL,
+  REGISTER_SUCCESS_URL,
+} from "../../constants/CommonConstants";
 
 let inboxId = "";
 let inboxEmail = "";
@@ -145,30 +149,79 @@ class UserRegisterPage {
     });
   }
 
+  userFillCorporateRegistrationFields(
+    inquiryType: string,
+    companyName: string,
+    industry: string,
+    contactPerson: string,
+    jobTitle: string,
+    countryCode: string,
+    phoneNumber: string,
+    email: string
+  ) {
+    cy.contains("label", "Inquiry Type")
+      .parent()
+      .find(".select__control")
+      .click();
+
+    cy.get(".select__menu").should("be.visible");
+    cy.get("#react-select-type-option-0").click();
+
+    cy.get("#company_name").clear().type(companyName);
+    cy.contains("label", "Industry").parent().find(".select__control").click();
+    cy.get(".select__menu").should("be.visible");
+    cy.get("#react-select-industry-option-0").click();
+
+    cy.get("#contact_person").clear().type(contactPerson);
+    cy.get("#job_title").clear().type(jobTitle);
+
+    cy.get(".select__input").eq(2).click();
+
+    cy.get(".select__menu").should("be.visible");
+    cy.get("#react-select-country_code-option-219").click();
+
+    cy.get("#national_number").clear().type(phoneNumber);
+    cy.get("#email").clear().type(email);
+  }
+
   getOTPFromEmail() {
-    cy.task<string>("mailslurp:waitForOtp", { inboxId }).then((otp) => {
-      expect(otp, "OTP code from email")
-        .to.be.a("string")
-        .and.have.length.greaterThan(0);
+    cy.task<{ otp: string }>("mailslurp:waitForOtp", { inboxId }).then(
+      ({ otp }) => {
+        expect(otp, "OTP code from email").to.match(/^\d{6}$/);
 
-      //   cy.getOtpFromMailSlurp(inboxId).then((otp) => {
-      cy.get(
-        'input[aria-label*="verification code"][maxlength="1"], ' +
+        const splitInputs =
+          'input[aria-label*="verification code"][maxlength="1"], ' +
           'input[type="tel"][maxlength="1"], ' +
-          '[data-otp] input, .otp input, input[name^="otp"]'
-      )
-        .should("have.length.greaterThan", 1)
-        .then(($inputs) => {
-          const digits = String(otp).split("");
-          const count = Math.min(digits.length, $inputs.length);
+          '[data-otp] input, .otp input, input[name^="otp"]';
 
-          for (let i = 0; i < count; i++) {
-            cy.wrap($inputs[i]).clear().type(digits[i], { force: true });
+        const singleInput =
+          'input[name="otp"], input[name="code"], input[type="tel"]:not([maxlength="1"]), ' +
+          'input[aria-label*="verification code"]:not([maxlength])';
+
+        cy.document().then((doc) => {
+          const hasSplit = doc.querySelectorAll(splitInputs).length > 1;
+
+          if (hasSplit) {
+            cy.get(splitInputs)
+              .should("have.length.greaterThan", 1)
+              .then(($inputs) => {
+                const digits = otp.split("");
+                const count = Math.min(digits.length, $inputs.length);
+                for (let i = 0; i < count; i++) {
+                  cy.wrap($inputs[i]).clear().type(digits[i], { force: true });
+                }
+                cy.wrap($inputs[count - 1]).blur();
+              });
+          } else {
+            cy.get(singleInput)
+              .first()
+              .clear()
+              .type(otp, { force: true })
+              .blur();
           }
-          cy.wrap($inputs[count - 1]).blur();
         });
-    });
-    // });
+      }
+    );
   }
 
   getSubmitBtn(buttonText: string) {
@@ -177,11 +230,25 @@ class UserRegisterPage {
 
   verifySuccessMessage(message: string) {
     cy.get(".swal2-html-container").contains(message).should("be.visible");
-    cy.get(".swal2-confirm swal2-styled").contains("OK").click();
+    cy.get(".swal2-confirm").contains("OK").click();
   }
 
   clickLocationAccessSkip(btnText: string) {
     cy.get("button").contains(btnText).click();
+  }
+
+  verifySuccessMessageCorporate(message: string) {
+    cy.get(".swal2-title").contains(message).should("be.visible");
+  }
+
+  clickOKBtn(buttonText: string) {
+    cy.get(".swal2-confirm").contains(buttonText).click();
+  }
+
+  getMembershipRegistrationPage() {
+    return cy
+      .url()
+      .should("eq", `${Cypress.config("baseUrl")}${REGISTER_SUCCESS_URL}`);
   }
 }
 export default new UserRegisterPage();
