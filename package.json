@@ -1,0 +1,14 @@
+{
+  "devDependencies": {
+    "@badeball/cypress-cucumber-preprocessor": "^23.2.1",
+    "@bahmutov/cypress-esbuild-preprocessor": "^2.2.7",
+    "@types/node": "^24.9.2",
+    "cypress-mailslurp": "^1.11.1",
+    "esbuild": "^0.25.12",
+    "mailslurp-client": "^16.0.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "cypress": "14.4.0"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "types": ["cypress", "cypress-mailslurp", "node"],
+    "target": "ES6",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "strict": true,
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./*"] 
+    },
+    "esModuleInterop": true,
+  },
+  "include": ["cypress/**/*.ts"]
+}
