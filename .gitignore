@@ -6,3 +6,5 @@ cypress/results/
 cypress/fixtures/*.json
 cypress/integration/**/*.js.map
 cypress.env.json
+
+node_modules/
